@@ -1,8 +1,8 @@
 <template>
-  <div id="ebook" style="min-height: calc(100vh - 65px - 70px);background: white">
+  <div id="ebook" style="padding: 0 25px;min-height: calc(100vh - 65px - 70px);background: white">
     <!--表头-->
     <div style="margin: 25px 0 15px 100px;">
-      <a-input-search style="width: 50%;max-width: 350px" placeholder="请输入关键字" enter-button="搜索"
+      <a-input-search style="width: 50%;max-width: 350px" placeholder="请输入关键字" enter-button="查询"
                       @search="handleQuery({page: 1, size: pagination.pageSize,name: $event})"/>
       <a-button type="danger" :size="size" style="margin-left: 25px" @click="showModel('add')">
         添加电子书
@@ -21,6 +21,9 @@
       <template #cover="{text:cover}">
         <img v-if="cover" :src="cover" alt="avatar" width="50" height="50"/>
       </template>
+      <template #category="{text:item}">
+        {{ category[item.category1Id] }} &nbsp;/&nbsp; {{ category[item.category2Id] }}
+      </template>
       <template #action="{ text: item }">
         <a-button type="primary" @click="showModel('edit',item)">编辑</a-button>
         &nbsp;&nbsp;
@@ -31,8 +34,8 @@
     <!--删除-->
     <a-modal v-model:visible="visible.delete" title="删除确认"
              @ok="handle('submit')"
-             ok-text="确认"
-             cancel-text="取消">
+             cancel-text="取消"
+             ok-text="确认">
       确定要删除？
       <p>{{ ebook.name }}</p>
     </a-modal>
@@ -84,7 +87,6 @@ import {message} from 'ant-design-vue';
 import axios from "axios";
 import {defineComponent, ref, onMounted, watch, toRaw} from 'vue';
 
-let c: Array<{ text: string, value: string }> = [];
 const columns = [
   {
     title: '封面',
@@ -96,13 +98,8 @@ const columns = [
     dataIndex: 'name'
   },
   {
-    title: '分类一',
-    dataIndex: 'category1Id',
-    filters: c
-  },
-  {
-    title: '分类二',
-    dataIndex: 'category2Id',
+    title: '分类',
+    slots: {customRender: 'category'}
   },
   {
     title: '文档数',
@@ -180,24 +177,16 @@ export default defineComponent({
       allNodes: null,
       choseNodes: null
     });
-    setTimeout(function () {
-      console.log(c)
-    }, 10000)
+    let category: any = ref({});
     const queryCategory = (): void => {
       axios.get("/category/query", {}).then((res: any): void => {
         if (res.code === 200) {
           categoryNodes.value.allNodes = res.data.data;
           categoryNodes.value.allNodes.forEach(item1 => {
-            let obj1 = {text: '', value: ''};
-            obj1.text = item1.name;
-            obj1.value = item1.id;
-            c.push(obj1);
+            category.value[item1.id] = item1.name;
             if (item1.children != '') {
               item1.children.forEach(item2 => {
-                let obj2 = {text: '', value: ''};
-                obj2.text = item2.name;
-                obj2.value = item2.id;
-                c.push(obj2);
+                category.value[item2.id] = item2.name;
               })
             }
           })
@@ -321,6 +310,7 @@ export default defineComponent({
     }
 
     return {
+      category,
       ebookform,
       changeNodes,
       labelCol: {span: 5},

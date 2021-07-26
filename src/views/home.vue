@@ -6,17 +6,20 @@
             mode="inline"
             :style="{ height: '100%', borderRight: 0 }"
         >
-          <a-sub-menu key="sub1">
-            <template #title>
+          <a-menu-item key="welcome" @click="queryEbook('')">
+              <MainOutlined/>
               <span>
+                全部
+              </span>
+          </a-menu-item>
+          <a-sub-menu v-for="parent in categoryNodes.allNodes" :key="parent.id">
+            <template #title>
+              <span >
                 <user-outlined/>
-                subnav 1111
+                {{ parent.name }}
               </span>
             </template>
-            <a-menu-item key="1">option1</a-menu-item>
-            <a-menu-item key="2">option2</a-menu-item>
-            <a-menu-item key="3">option3</a-menu-item>
-            <a-menu-item key="4">option4</a-menu-item>
+            <a-menu-item v-for="child in parent.children" :key="child.id" @click="queryEbook(child.id)">{{ child.name }}</a-menu-item>
           </a-sub-menu>
         </a-menu>
       </a-layout-sider>
@@ -53,6 +56,7 @@
 import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
 import {defineComponent, onMounted, ref, reactive, toRef} from 'vue';
 import axios from 'axios';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
   name: 'home',
@@ -62,22 +66,48 @@ export default defineComponent({
     MessageOutlined,
   },
   setup() {
-    const ebooks = ref();
 
-    const actions: Record<string, string>[] = [
-      {type: 'StarOutlined', text: '156'},
-      {type: 'LikeOutlined', text: '156'},
-      {type: 'MessageOutlined', text: '2'},
-    ];
     onMounted(() => {
-      axios.get("ebook/list").then(res => {
+      queryEbook('');
+      queryCategory();
+    })
+    const ebooks = ref();
+    const queryEbook = (val): void => {
+      axios.get("ebook/listByCategory", {
+        params: {
+          categoryId: val,
+        }
+      }).then(res => {
         ebooks.value = res.data
       });
-    })
+    }
 
+    const categoryNodes: any = ref({
+      allNodes: null,
+      choseNodes: null
+    });
+    let category: any = ref({});
+    const queryCategory = (): void => {
+      axios.get("/category/query", {}).then((res: any): void => {
+        if (res.code === 200) {
+          categoryNodes.value.allNodes = res.data.data;
+          categoryNodes.value.allNodes.forEach(item1 => {
+            category.value[item1.id] = item1.name;
+            if (item1.children != '') {
+              item1.children.forEach(item2 => {
+                category.value[item2.id] = item2.name;
+              })
+            }
+          })
+        } else {
+          message.error("查询失败");
+        }
+      })
+    }
     return {
+      categoryNodes,
+      queryEbook,
       ebooks,
-      actions,
     }
   }
 });
