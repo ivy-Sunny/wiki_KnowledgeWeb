@@ -4,11 +4,11 @@
     <a-menu
         theme="dark"
         mode="horizontal"
-        v-model:selectedKeys="selectedKeys1"
+        v-model:selectedKeys="selectedKeys"
         :style="{ lineHeight: '64px' }"
     >
       <a-menu-item key="/">
-        <router-link to="/">首页</router-link>
+        <router-link to="/admin/category">首页</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/ebook">
         <router-link to="/admin/ebook">电子书管理</router-link>
@@ -24,9 +24,18 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import {useRouter} from "vue-router";
+import router from "@/router";
 
 export default defineComponent({
-  name: "the-header"
+  name: "the-header",
+  setup() {
+    const selectedKeys:Array<string> = ['/'];
+    router.push('/admin/category')
+    return {
+      selectedKeys
+    }
+  }
 })
 </script>
 
