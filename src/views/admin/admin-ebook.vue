@@ -121,6 +121,7 @@ const columns = [
 ];
 
 export default defineComponent({
+  name:'AdminEbook',
   setup: function () {
     const ebookform = ref();
     const visible = ref({

@@ -23,15 +23,19 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {defineComponent, onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import router from "@/router";
 
 export default defineComponent({
   name: "the-header",
   setup() {
-    const selectedKeys:Array<string> = ['/'];
-    router.push('/admin/category')
+     const selectedKeys:Array<string> = ref(['/']);
+
+    onMounted(()=>{
+      router.push('/admin/category')
+    })
+
     return {
       selectedKeys
     }

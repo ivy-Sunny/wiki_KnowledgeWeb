@@ -59,7 +59,7 @@ import axios from 'axios';
 import {message} from "ant-design-vue";
 
 export default defineComponent({
-  name: 'home',
+  name: 'AdminCategory',
   components: {
     StarOutlined,
     LikeOutlined,

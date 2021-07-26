@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "admin.doc"
+  name: "AdminDoc"
 }
 </script>
 
