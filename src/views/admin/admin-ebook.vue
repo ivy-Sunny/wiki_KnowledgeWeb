@@ -180,9 +180,9 @@ export default defineComponent({
       allNodes: null,
       choseNodes: null
     });
-    setTimeout(function (){
+    setTimeout(function () {
       console.log(c)
-    },10000)
+    }, 10000)
     const queryCategory = (): void => {
       axios.get("/category/query", {}).then((res: any): void => {
         if (res.code === 200) {
@@ -226,7 +226,6 @@ export default defineComponent({
         }
       }).then((res: any) => {
         loading.value = false;
-        console.log(res.data)
         if (res.code === 200) {
           const data = res.data;
           ebooks.value = data.list;
@@ -262,8 +261,7 @@ export default defineComponent({
       } else if (operation === 'add') {
         visible.value.add = true;
       } else if (operation === 'edit') {
-        ebook.value = item
-
+        ebook.value = Object.assign({}, item);
         categoryNodes.value.allNodes.forEach(item => {
           if (item.id === ebook.value.category1Id) {
             categoryNodes.value.choseNodes = item.children;
@@ -281,7 +279,7 @@ export default defineComponent({
               .validate()
               .then(() => {
                 axios.post(`/ebook/${dowhat}`, ebook.value).then(res => {
-                  reflush();
+                  reflush(true);
                 })
               })
               .catch(() => {
@@ -289,14 +287,15 @@ export default defineComponent({
               })
         } else {
           axios.post(`/ebook/${dowhat}`, ebook.value).then(res => {
-            reflush();
+            reflush(true);
           })
         }
       } else {
         reflush();
       }
 
-      function reflush() {
+
+      function reflush(flag = false) {
         dowhat = '';
         visible.value = {
           delete: false,
@@ -310,6 +309,13 @@ export default defineComponent({
           description: '',
           category2Id: null,
           category1Id: null,
+        }
+        if (flag) {
+          handleQuery({
+            page: 1,
+            size: 2,
+            name: ''
+          })
         }
       }
     }
