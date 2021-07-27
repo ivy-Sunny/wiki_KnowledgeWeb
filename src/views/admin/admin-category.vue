@@ -2,7 +2,7 @@
   <div id="category">
     <div style="margin: 0px 0 15px 100px;">
       <a-input-search style="width: 50%;max-width: 350px" placeholder="请输入关键字" enter-button="查询"
-                      @search="handleQuery({name: $event})"/>
+                      @search="handleQuery($event)"/>
       <a-button type="danger" :size="size" style="margin-left: 25px" @click="showModel('add')">
         新增分类
       </a-button>
@@ -18,7 +18,7 @@
       <template #action="{text:item}">
         <a-button type="primary" @click="showModel('edit',item)">编辑</a-button>
         &nbsp;&nbsp;
-        <a-button type="primary" style="background: #ff7875" @click="showModel('del',item)" danger>删除</a-button>
+        <a-button v-show="item.parent != 0" type="primary" style="background: #ff7875" @click="showModel('del',item)" danger>删除</a-button>
       </template>
     </a-table>
   </div>
@@ -67,8 +67,12 @@ export default defineComponent({
     })
 
     const categoryList = ref();
-    const handleQuery = (params) => {
-      axios.get("/category/query").then(res => {
+    const handleQuery = (param) => {
+      axios.get("/category/query",{
+        params:{
+          name:param
+        }
+      }).then(res => {
         console.log(res.data)
         categoryList.value = res.data.data
       })
