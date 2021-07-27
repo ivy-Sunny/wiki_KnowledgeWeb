@@ -1,18 +1,29 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
-import Home from '../views/home.vue';
 import About from '../views/about.vue';
+import home from '../views/customer/home.vue';
 import AdminEbook from '../views/admin/admin-ebook.vue';
+import AdminDoc from '../views/admin/admin-doc.vue';
 import AdminCategory from '../views/admin/admin-category.vue';
 const routes: Array<RouteRecordRaw> = [
+    {
+        path: '/home',
+        name: 'Home',
+        component: home
+    },
+    {
+        path: '/about',
+        name: 'About',
+        component: About,
+    },
     {
         path: '/admin/category',
         name: 'AdminCategory',
         component: AdminCategory
     },
     {
-        path: '/about',
-        name: 'About',
-        component: About,
+        path: '/admin/doc',
+        name: 'AdminDoc',
+        component: AdminDoc
     },
     {
         path: '/admin/ebook',

@@ -8,10 +8,13 @@
         :style="{ lineHeight: '64px' }"
     >
       <a-menu-item key="/">
-        <router-link to="/admin/category">首页</router-link>
+        <router-link to="/home">首页</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/ebook">
         <router-link to="/admin/ebook">电子书管理</router-link>
+      </a-menu-item>
+      <a-menu-item key="/admin/category">
+        <router-link to="/admin/category">分类管理</router-link>
       </a-menu-item>
       <a-menu-item key="/about">
         <router-link to="/about">
@@ -30,10 +33,11 @@ import router from "@/router";
 export default defineComponent({
   name: "the-header",
   setup() {
-     const selectedKeys:Array<string> = ref(['/']);
+     const selectedKeys:any = ref([]);
 
     onMounted(()=>{
-      router.push('/admin/category')
+      router.push('/home')
+      selectedKeys.value.push('/')
     })
 
     return {

@@ -5,9 +5,9 @@
 </template>
 
 <script>
-export default {
-  name: "AdminDoc"
-}
+
+
+
 </script>
 
 <style scoped>

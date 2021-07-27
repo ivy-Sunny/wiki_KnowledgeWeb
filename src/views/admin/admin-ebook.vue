@@ -180,7 +180,7 @@ export default defineComponent({
     });
     let category: any = ref({});
     const queryCategory = (): void => {
-      axios.get("/category/query", {}).then((res: any): void => {
+      axios.get("/category/nodes", {}).then((res: any): void => {
         if (res.code === 200) {
           categoryNodes.value.allNodes = res.data.data;
           categoryNodes.value.allNodes.forEach(item1 => {

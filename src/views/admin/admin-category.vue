@@ -1,127 +1,99 @@
 <template>
-  <div id="main">
-    <a-layout>
-      <a-layout-sider width="200" style="background: #fff">
-        <a-menu
-            mode="inline"
-            :style="{ height: '100%', borderRight: 0 }"
-        >
-          <a-menu-item key="welcome" @click="queryEbook('')">
-              <MainOutlined/>
-              <span>
-                全部
-              </span>
-          </a-menu-item>
-          <a-sub-menu v-for="parent in categoryNodes.allNodes" :key="parent.id">
-            <template #title>
-              <span >
-                <user-outlined/>
-                {{ parent.name }}
-              </span>
-            </template>
-            <a-menu-item v-for="child in parent.children" :key="child.id" @click="queryEbook(child.id)">{{ child.name }}</a-menu-item>
-          </a-sub-menu>
-        </a-menu>
-      </a-layout-sider>
-      <a-layout-content
-          :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
-      >
-        <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="ebooks"
-                :grid="{gutter:20, column: 3}">
-          <template #renderItem="{ item }">
-            <a-list-item key="item.name">
-              <template #actions>
-          <span v-for="{ type, text } in actions" :key="type">
-            <component v-bind:is="type" style="margin-right: 8px"/>
-            {{ text }}
-          </span>
-              </template>
-              <a-list-item-meta :description="item.description">
-                <template #title>
-                  <a :href="item.href">{{ item.name }}</a>
-                </template>
-                <template #avatar>
-                  <a-avatar :src="item.cover"/>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </template>
-        </a-list>
-      </a-layout-content>
-    </a-layout>
+  <div id="category">
+    <div style="margin: 0px 0 15px 100px;">
+      <a-input-search style="width: 50%;max-width: 350px" placeholder="请输入关键字" enter-button="查询"
+                      @search="handleQuery({name: $event})"/>
+      <a-button type="danger" :size="size" style="margin-left: 25px" @click="showModel('add')">
+        新增分类
+      </a-button>
+    <!--表格-->
+    <a-table
+        :columns="columns"
+        :row-key="record => record.id"
+        :data-source="categoryList"
+        :loading="loading"
+        :pagination = "false"
+    >
+      <template #action="{text:item}">
+        <a-button type="primary" @click="showModel('edit',item)">编辑</a-button>
+        &nbsp;&nbsp;
+        <a-button type="primary" style="background: #ff7875" @click="showModel('del',item)" danger>删除</a-button>
+      </template>
+    </a-table>
   </div>
 </template>
 
-<script lang="ts">
-import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
-import {defineComponent, onMounted, ref, reactive, toRef} from 'vue';
-import axios from 'axios';
-import {message} from "ant-design-vue";
+<script>
+import {message} from 'ant-design-vue';
+import axios from "axios";
+import {defineComponent, ref, onMounted, watch, toRaw} from 'vue';
 
-export default defineComponent({
-  name: 'AdminCategory',
-  components: {
-    StarOutlined,
-    LikeOutlined,
-    MessageOutlined,
+const columns = [
+  {
+    title: '名称',
+    dataIndex: 'name',
+    width:'25%'
   },
+  {
+    title: '父分类',
+    dataIndex: 'parentName',
+    width:'25%'
+  },
+  {
+    title: '顺序',
+    dataIndex: 'sort',
+    width:'25%'
+  },
+  {
+    title: 'Action',
+    key: 'action',
+    slots: {customRender: 'action'},
+    width:'25%'
+  }
+];
+export default defineComponent({
+  name: "admin-category",
   setup() {
+    const loading = ref(false);
+    const pagination = ref({
+      current: 1,
+      pageSize: 5,
+      total: 0
+    });
 
     onMounted(() => {
-      queryEbook('');
-      queryCategory();
+      handleQuery();
     })
-    const ebooks = ref();
-    const queryEbook = (val): void => {
-      axios.get("ebook/listByCategory", {
-        params: {
-          categoryId: val,
-        }
-      }).then(res => {
-        ebooks.value = res.data
-      });
-    }
 
-    const categoryNodes: any = ref({
-      allNodes: null,
-      choseNodes: null
-    });
-    let category: any = ref({});
-    const queryCategory = (): void => {
-      axios.get("/category/query", {}).then((res: any): void => {
-        if (res.code === 200) {
-          categoryNodes.value.allNodes = res.data.data;
-          categoryNodes.value.allNodes.forEach(item1 => {
-            category.value[item1.id] = item1.name;
-            if (item1.children != '') {
-              item1.children.forEach(item2 => {
-                category.value[item2.id] = item2.name;
-              })
-            }
-          })
-        } else {
-          message.error("查询失败");
-        }
+    const categoryList = ref();
+    const handleQuery = (params) => {
+      axios.get("/category/query").then(res => {
+        console.log(res.data)
+        categoryList.value = res.data.data
       })
     }
+
+    const showModel = (operation,item)=>{
+      console.log(operation,item)
+    }
     return {
-      categoryNodes,
-      queryEbook,
-      ebooks,
+      columns,
+      loading,
+      pagination,
+      categoryList,
+      handleQuery,
+      showModel
     }
   }
-});
+})
 </script>
-<style scoped>
-.ant-avatar {
-  width: 50px;
-  height: 50px;
-  line-height: 50px;
-  border-radius: 10%;
-  margin: 5px 0;
-}
 
-#main >>> .ant-layout {
-  min-height: calc(100vh - 65px - 70px);
-}
+<style scoped>
+  #category{
+    padding: 25px;
+    background: white;
+  }
+  #category >>> .ant-table-row-cell-break-word{
+    text-align: center;
+  }
 </style>
