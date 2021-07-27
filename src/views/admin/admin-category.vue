@@ -6,13 +6,14 @@
       <a-button type="danger" :size="size" style="margin-left: 25px" @click="showModel('add')">
         新增分类
       </a-button>
+    </div>
     <!--表格-->
     <a-table
         :columns="columns"
         :row-key="record => record.id"
         :data-source="categoryList"
         :loading="loading"
-        :pagination = "false"
+        :pagination="false"
     >
       <template #action="{text:item}">
         <a-button type="primary" @click="showModel('edit',item)">编辑</a-button>
@@ -32,23 +33,23 @@ const columns = [
   {
     title: '名称',
     dataIndex: 'name',
-    width:'25%'
+    width: '25%'
   },
   {
     title: '父分类',
     dataIndex: 'parentName',
-    width:'25%'
+    width: '25%'
   },
   {
     title: '顺序',
     dataIndex: 'sort',
-    width:'25%'
+    width: '25%'
   },
   {
     title: 'Action',
     key: 'action',
     slots: {customRender: 'action'},
-    width:'25%'
+    width: '25%'
   }
 ];
 export default defineComponent({
@@ -73,8 +74,8 @@ export default defineComponent({
       })
     }
 
-    const showModel = (operation,item)=>{
-      console.log(operation,item)
+    const showModel = (operation, item) => {
+      console.log(operation, item)
     }
     return {
       columns,
@@ -89,11 +90,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  #category{
-    padding: 25px;
-    background: white;
-  }
-  #category >>> .ant-table-row-cell-break-word{
-    text-align: center;
-  }
+#category {
+  padding: 25px;
+  background: white;
+}
+
+#category >>> .ant-table-row-cell-break-word {
+  text-align: center;
+}
 </style>
